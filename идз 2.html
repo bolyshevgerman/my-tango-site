@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Практика 9 — TangoStudio | Адаптивная вёрстка на Flex</title>
+  <!-- Подключаем шрифты Google Fonts: Playfair Display для заголовков, Inter для текста -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Подключаем библиотеку иконок Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /*  СБРОС СТАНДАРТНЫХ СТИЛЕЙ  */
+    /* Убираем отступы у всех элементов, включаем альтернативную модель бокса */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /*  ГЛОБАЛЬНЫЕ СТИЛИ  */
+    body {
+      font-family: 'Inter', sans-serif; /* Основной шрифт */
+      background-color: #fefcf9; /* Тёплый белый фон */
+      color: #2c241e; /* Тёмный цвет текста */
+      line-height: 1.5; /* Межстрочный интервал для читаемости */
+    }
+
+    /*  КОНТЕЙНЕР  */
+    /* Ограничивает ширину контента и центрирует по горизонтали */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /*  ШАПКА  */
+    /* Фиксированная шапка с эффектом стекла (glassmorphism) */
+    .header {
+      background: rgba(255, 252, 245, 0.96); /* Почти белый с прозрачностью */
+      backdrop-filter: blur(10px); /* Размытие фона за шапкой */
+      position: sticky; /* Прилипает к верху при скролле */
+      top: 0;
+      width: 100%;
+      z-index: 100; /* Поверх всех элементов */
+      border-bottom: 1px solid #e8e0d5; /* Светлая разделительная линия */
+    }
+    /* Навигация: логотип и меню в одну строку */
+    .nav {
+      display: flex;
+      justify-content: space-between; /* Логотип слева, меню справа */
+      align-items: center;
+      padding: 20px 0;
+      flex-wrap: wrap; /* При сужении экрана элементы переносятся */
+    }
+    /* Логотип — градиентный текст, элегантный серифный шрифт */
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #b87c4f, #8b5a3c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: 1px;
+    }
+    /* Меню навигации — горизонтальный список */
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    /* Стили ссылок в меню */
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4a3729;
+      transition: 0.2s; /* Плавное изменение цвета при наведении */
+    }
+    .nav-links a:hover {
+      color: #b87c4f; /* Акцентный цвет при наведении */
+    }
+    /* Бургер-меню (скрыто на десктопе) */
+    .menu-icon {
+      display: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #4a3729;
+    }
+
+    /*  ГЛАВНЫЙ ЭКРАН  */
+    /* Блок на всю высоту экрана с фоновой картинкой */
+    .hero {
+      display: flex;
+      align-items: center; /* Вертикальное центрирование контента */
+      min-height: 100vh;
+      position: relative; /* Для позиционирования фоновой картинки */
+      overflow: hidden; /* Скрываем выходящие за пределы элементы */
+      background: #fefcf9;
+    }
+    /* Фоновая картинка — полупрозрачная, справа */
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 55%;
+      height: 100%;
+      background: url('https://st.rolld.ru/i/thumbnails/argentinskoe-tango-kaliningrad-2023.jpeg') center/cover no-repeat;
+      opacity: 0.2; /* Прозрачность, чтобы не перекрывать текст */
+      pointer-events: none; /* Чтобы картинка не мешала кликам */
+    }
+    /* Контент главного экрана — слева */
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* Выравнивание по левому краю */
+      max-width: 600px;
+      position: relative;
+      z-index: 2; /* Поверх фоновой картинки */
+      margin-left: 0;
+    }
+    /* Крупный заголовок TangoStudio */
+    .hero-title-main {
+      font-family: 'Playfair Display', serif;
+      font-size: 4.5rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #2c241e;
+    }
+    /* Подзаголовок "Танго" акцентным цветом */
+    .hero-sub {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 500;
+      color: #b87c4f;
+      margin: 0.3rem 0 0.8rem 0;
+    }
+    /* Описание школы */
+    .hero-description {
+      font-size: 1rem;
+      color: #5e4b3a;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    /* Группа кнопок в ряд */
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    /* Общие стили для обеих кнопок */
+    .btn-primary, .btn-outline {
+      padding: 12px 28px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.2s;
+      border: none;
+    }
+    /* Основная кнопка — залитая цветом */
+    .btn-primary {
+      background: #b87c4f;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #9a643e; /* Затемнение при наведении */
+    }
+    /* Кнопка с обводкой — прозрачная */
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #b87c4f;
+      color: #b87c4f;
+    }
+    .btn-outline:hover {
+      background: rgba(184,124,79,0.08); /* Лёгкая заливка при наведении */
+    }
+
+    /*  ВСЕ СЕКЦИИ */
+    /* Отступы сверху/снизу и разделительная линия */
+    section {
+      padding: 80px 0;
+      border-bottom: 1px solid #ece3da;
+    }
+    /* Заголовки секций — центрированы, серифный шрифт */
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #2c241e;
+      text-align: center;
+    }
+    /* Подзаголовки секций */
+    .section-sub {
+      color: #8b735b;
+      margin-bottom: 2.5rem;
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    /* ===== СЛАЙДЕР ===== */
+    .slider-container {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      overflow: hidden; /* Скрываем слайды за пределами контейнера */
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      background: #fef7f0;
+    }
+    /* Дорожка слайдера — горизонтальный flex-контейнер */
+    .slider-track {
+      display: flex;
+      transition: transform 0.5s ease; /* Плавное переключение */
+    }
+    /* Каждый слайд — на всю ширину контейнера */
+    .slide {
+      flex: 0 0 100%; /* Занимает 100% ширины */
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 2rem;
+      position: relative;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    /* Фоновое изображение слайда */
+    .slide-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    /* Градиент затемнения снизу для читаемости текста */
+    .slide-bg::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+    }
+    /* Контент слайда — поверх фона */
+    .slide-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 600px;
+      padding-bottom: 1rem;
+    }
+    .slide-content h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      margin-bottom: 0.3rem;
+      color: #fff;
+    }
+    .slide-content p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.9);
+    }
+    /* Кнопки слайдера (влево/вправо) */
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.85);
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      font-size: 1.2rem;
+      z-index: 5;
+      transition: 0.2s;
+      color: #2c241e;
+    }
+    .slider-btn:hover {
+      background: #b87c4f;
+      color: white;
+    }
+    .btn-prev { left: 16px; }
+    .btn-next { right: 16px; }
+    /* Точки навигации под слайдером */
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      background: #d9cdc0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .dot.active {
+      background: #b87c4f;
+      width: 30px; /* Активная точка длиннее */
+    }
+
+    /*  ВКЛАДКИ  */
+    .tabs-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    /* Заголовки вкладок в ряд */
+    .tabs-header {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid #e0d5ca;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .tab-btn {
+      padding: 12px 28px;
+      background: transparent;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      color: #7a6250;
+      font-size: 1rem;
+    }
+    .tab-btn.active {
+      color: #b87c4f;
+      border-bottom: 3px solid #b87c4f; /* Подчёркивание активной вкладки */
+    }
+    /* Контент вкладки — скрыт по умолчанию */
+    .tab-content {
+      display: none;
+      padding: 2rem;
+      background: #fefbf7;
+      border-radius: 16px;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    .tab-content.active-content {
+      display: block; /* Показываем активную вкладку */
+    }
+    /* Изображение в вкладке */
+    .tab-image {
+      width: 100%;
+      max-height: 350px;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .tab-content h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+    }
+
+    /*  ПРЕПОДАВАТЕЛИ  */
+    /* Сетка карточек — flex с переносом */
+    .teachers-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .teacher-card {
+      flex: 1 1 280px; /* Базовый размер, возможность расти и сжиматься */
+      max-width: 320px;
+      background: #fefaf5;
+      border: 1px solid #e6dacf;
+      border-radius: 24px;
+      overflow: hidden;
+      transition: 0.3s;
+    }
+    .teacher-card:hover {
+      transform: translateY(-6px); /* Лёгкий подъём при наведении */
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+    /* Фото преподавателя — на всю ширину карточки */
+    .teacher-photo {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+    /* Информация о преподавателе */
+    .teacher-info {
+      padding: 1.5rem 1.5rem 1.8rem;
+      text-align: center;
+    }
+    .teacher-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 0.3rem;
+    }
+    .teacher-info p {
+      color: #7a6250;
+      font-size: 0.95rem;
+    }
+
+    /*  АККОРДЕОН  */
+    .accordion {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .accordion-item {
+      border-bottom: 1px solid #e6dbd0;
+    }
+    /* Заголовок вопроса — кликабельный */
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 0;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.05rem;
+    }
+    /* Ответ — скрыт, раскрывается плавно */
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease; /* Плавное раскрытие */
+      color: #6b5746;
+    }
+    .accordion-item.active .accordion-content {
+      max-height: 150px;
+      padding-bottom: 1rem;
+    }
+
+    /*  МОДАЛЬНОЕ ОКНО  */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden; /* Скрыто по умолчанию */
+      opacity: 0;
+      transition: 0.2s;
+      z-index: 1000;
+    }
+    .modal.active {
+      visibility: visible;
+      opacity: 1; /* Показываем при добавлении класса active */
+    }
+    .modal-content {
+      background: white;
+      max-width: 420px;
+      width: 90%;
+      padding: 2rem;
+      border-radius: 28px;
+      border-top: 4px solid #b87c4f;
+    }
+    .close-modal {
+      float: right;
+      font-size: 1.6rem;
+      cursor: pointer;
+    }
+    .modal input, .modal textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      border: 1px solid #ddd0c2;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+    .modal button {
+      background: #b87c4f;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    /*  ФАНТАЗИЙНАЯ АНИМАЦИЯ  */
+    .fantasy-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .floating {
+      position: absolute;
+      font-size: 1.6rem;
+      opacity: 0.12;
+      animation: floatAnim 15s infinite alternate;
+    }
+    /* Ключевые кадры для анимации парящих символов */
+    @keyframes floatAnim {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-40px) rotate(10deg); }
+    }
+
+    /*  УМНЫЙ РАЗДЕЛ  */
+    .smart-tip {
+      background: #fefaf5;
+      padding: 1.8rem 2rem;
+      border-left: 6px solid #b87c4f;
+      cursor: pointer;
+      transition: 0.3s;
+      max-width: 800px;
+      margin: 0 auto;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .smart-tip:hover {
+      background: #f5ede5;
+      transform: translateX(6px);
+    }
+    .smart-tip img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #b87c4f44;
+    }
+    .smart-tip strong {
+      font-size: 1.1rem;
+    }
+
+    /*  ПОДВАЛ  */
+    .footer {
+      background: #f2ece5;
+      text-align: center;
+      padding: 40px 20px;
+      color: #7a624e;
+    }
+
+    /*  АДАПТИВНАЯ ВЁРСТКА  */
+
+    /* Планшет (ширина до 1024px) */
+    @media (max-width: 1024px) {
+      .hero-bg { width: 45%; }
+      .slide { min-height: 400px; }
+      .slide-content h3 { font-size: 1.8rem; }
+      .tab-image { max-height: 280px; }
+    }
+
+    /* Планшет/телефон (ширина до 768px) */
+    @media (max-width: 768px) {
+      .container { padding: 0 24px; }
+      .nav-links {
+        display: none; /* Скрываем меню */
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        padding-top: 1rem;
+      }
+      .nav-links.show { display: flex; } /* Показываем при клике на бургер */
+      .menu-icon { display: block; } /* Показываем бургер-иконку */
+      .hero-title-main { font-size: 3.2rem; }
+      .hero-sub { font-size: 2.2rem; }
+      .hero-description { font-size: 0.95rem; }
+      .hero-bg { width: 40%; opacity: 0.15; }
+      .slide { min-height: 320px; padding: 1.5rem; }
+      .slide-content h3 { font-size: 1.5rem; }
+      .teacher-photo { height: 220px; }
+      .teacher-card { flex: 1 1 240px; }
+      h2 { font-size: 1.9rem; }
+      .smart-tip { flex-direction: column; text-align: center; }
+      .slider-btn { width: 40px; height: 40px; font-size: 1rem; }
+      .tab-image { max-height: 220px; }
+    }
+
+    /* Телефон (ширина до 380px) */
+    @media (max-width: 380px) {
+      .container { padding: 0 16px; }
+      .logo { font-size: 1.4rem; }
+      .hero-title-main { font-size: 2.2rem; }
+      .hero-sub { font-size: 1.8rem; }
+      .hero-description { font-size: 0.85rem; }
+      .hero-bg { width: 30%; opacity: 0.1; }
+      .btn-group { flex-direction: column; width: 100%; }
+      .btn-primary, .btn-outline { width: 100%; text-align: center; padding: 12px; }
+      .slide { min-height: 260px; padding: 1rem; }
+      .slide-content h3 { font-size: 1.3rem; }
+      .slide-content p { font-size: 0.9rem; }
+      .teacher-photo { height: 180px; }
+      .teachers-grid { flex-direction: column; align-items: center; }
+      .teacher-card { flex: auto; max-width: 100%; width: 100%; }
+      .tabs-header { flex-direction: column; border-bottom: none; gap: 0.3rem; align-items: stretch; }
+      .tab-btn { text-align: center; background: #f7f1ea; border-radius: 40px; padding: 8px; }
+      .tab-btn.active { border-bottom: none; background: #b87c4f33; }
+      .accordion-header { font-size: 0.9rem; }
+      h2 { font-size: 1.5rem; }
+      .modal-content { padding: 1.2rem; }
+      .smart-tip { font-size: 0.85rem; flex-direction: column; text-align: center; padding: 1.2rem; }
+      .smart-tip img { width: 60px; height: 60px; }
+      .slider-btn { width: 34px; height: 34px; font-size: 0.8rem; }
+      .btn-prev { left: 8px; }
+      .btn-next { right: 8px; }
+      .tab-image { max-height: 160px; }
+    }
+
+    /* Вспомогательные классы */
+    .hero { position: relative; }
+    .relative { position: relative; }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<!-- АНИМАЦИЯ ЗАГРУЗКИ -->
+<div id="loaderOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fefcf9; z-index:2000; display:flex; align-items:center; justify-content:center; flex-direction:column; transition:0.4s;">
+  <div style="width:50px; height:50px; border:4px solid #e0cfc0; border-top:4px solid #b87c4f; border-radius:50%; animation: spinLoad 0.9s linear infinite;"></div>
+  <p style="margin-top:12px; color:#b87c4f; font-family:'Inter',sans-serif;">загрузка танго...</p>
+</div>
+<style>
+  @keyframes spinLoad {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+<!-- ШАПКА -->
+<header class="header">
+  <div class="container">
+    <div class="nav">
+      <div class="logo">TangoStudio</div>
+      <div class="menu-icon" id="menuIcon"><i class="fas fa-bars"></i></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">о нас</a></li>
+        <li><a href="#lessons">занятия</a></li>
+        <li><a href="#teachers">преподаватели</a></li>
+        <li><a href="#" id="contactNavBtn">контакты</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ГЛАВНЫЙ ЭКРАН -->
+  <section class="hero relative" id="hero">
+    <div class="hero-bg"></div>
+    <div class="fantasy-area" id="fantasyArea"></div>
+    <div class="container hero-content">
+      <div class="hero-title-main">TangoStudio</div>
+      <div class="hero-sub">Танго</div>
+      <div class="hero-description">
+        Школа аутентичного танго в центре Москвы. Преподаватели из Аргентины, живая музыка и настоящая атмосфера милонги.
+      </div>
+      <div class="btn-group">
+        <button class="btn-primary" id="openModalBtn">записаться</button>
+        <button class="btn-outline" id="trialBtn">пробный урок</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- СЛАЙДЕР -->
+  <section id="about">
+    <div class="container">
+      <h2>Атмосфера милонги</h2>
+      <div class="section-sub">Фотографии и эмоции наших вечеров</div>
+      <div class="slider-container">
+        <div class="slider-track" id="sliderTrack">
+          <div class="slide">
+            <div class="slide-bg" style="background-image: url('https://kluch.media/upload/iblock/99c/tango-1200.jpg');"></div>
+            <div class="slide-content">
+              <h3>Страсть танго</h3>
+              <p>Эмоции и движение в каждой ноте</p>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="slide-bg" style="background-image: url('https://elcentro.ru/upload/media/content/1_glavnaya.jpg'); background-position: center top;"></div>
+            <div class="slide-content">
+              <h3>Сообщество</h3>
+              <p>Уютная студия, друзья и танго-вечеринки</p>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1200&h=800&fit=crop&crop=center');"></div>
+            <div class="slide-content">
+              <h3>Живая музыка</h3>
+              <p>Бандонеон и оркестр создают магию</p>
+            </div>
+          </div>
+        </div>
+        <button class="slider-btn btn-prev" id="prevSlide"><i class="fas fa-chevron-left"></i></button>
+        <button class="slider-btn btn-next" id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="dots" id="dotsContainer"></div>
+    </div>
+  </section>
+
+  <!-- ЗАНЯТИЯ (ВКЛАДКИ) С КАРТИНКАМИ -->
+  <section id="lessons">
+    <div class="container">
+      <h2>Наши занятия</h2>
+      <div class="tabs-wrapper">
+        <div class="tabs-header">
+          <button class="tab-btn active" data-tab="tab1">Начинающие</button>
+          <button class="tab-btn" data-tab="tab2">Продолжающие</button>
+          <button class="tab-btn" data-tab="tab3">Техника</button>
+        </div>
+        
+        <div id="tab1" class="tab-content active-content">
+          <img class="tab-image" src="https://vmrucdn.servicecdn.ru/2025.12/original/69399d0e82682c5967c379f9.jpg" alt="Начинающие" style="object-position: center 30%;">
+          <h3>💃 С нуля до первого шага</h3>
+          <p>Базовые элементы, осанка, музыкальность. Группы до 12 человек.</p>
+        </div>
+        
+        <div id="tab2" class="tab-content">
+          <img class="tab-image" src="https://i.imgur.com/yKScRbN.jpeg" alt="Продолжающие" style="object-position: center 15%;">
+          <h3>🕺 Салон и импровизация</h3>
+          <p>Изучение сакад, барридас, работа в парах. Сложные последовательности и стилизация.</p>
+        </div>
+        
+        <div id="tab3" class="tab-content">
+          <img class="tab-image" src="https://i.imgur.com/FVpYMQ8.jpeg" alt="Техника" style="object-position: center 15%;">
+          <h3>🎵 Музыкальность</h3>
+          <p>Чувство оркестра, паузы, интерпретация. Подготовка к танго-марафонам.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ПРЕПОДАВАТЕЛИ -->
+  <section id="teachers">
+    <div class="container">
+      <h2>Преподаватели</h2>
+      <div class="teachers-grid">
+        <div class="teacher-card">
+          <img class="teacher-photo" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop&crop=center" alt="Carlos Mendez">
+          <div class="teacher-info">
+            <h3>Carlos Mendez</h3>
+            <p>Маэстро из Аргентины, 18 лет стажа</p>
+          </div>
+        </div>
+        <div class="teacher-card">
+          <img class="teacher-photo" src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=600&h=600&fit=crop&crop=center" alt="Elena Suárez">
+          <div class="teacher-info">
+            <h3>Elena Suárez</h3>
+            <p>Хореограф-постановщик, преподаватель сцены</p>
+          </div>
+        </div>
+        <div class="teacher-card">
+          <img class="teacher-photo" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=600&fit=crop&crop=center" alt="Dmitry Orlov">
+          <div class="teacher-info">
+            <h3>Dmitry Orlov</h3>
+            <p>Специалист по музыкальности и ритмам</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- АККОРДЕОН FAQ -->
+  <section id="faq">
+    <div class="container">
+      <h2>Часто задаваемые вопросы</h2>
+      <div class="accordion" id="accordion">
+        <div class="accordion-item"><div class="accordion-header">Нужна ли пара для занятий? <i class="fas fa-chevron-down"></i></div><div class="accordion-content">Нет, мы практикуем смену партнёров. Можно приходить одному.</div></div>
+        <div class="accordion-item"><div class="accordion-header">Как проходит пробный урок? <i class="fas fa-chevron-down"></i></div><div class="accordion-content">Пробное занятие — 600₽, вы знакомитесь с базой и атмосферой.</div></div>
+        <div class="accordion-item"><div class="accordion-header">Нужна ли специальная обувь? <i class="fas fa-chevron-down"></i></div><div class="accordion-content">Подойдут удобные туфли на небольшом каблуке, есть прокат.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- УМНЫЙ РАЗДЕЛ -->
+  <section>
+    <div class="container">
+      <h2>Совет от маэстро</h2>
+      <div class="smart-tip" id="smartAdvice">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=400&fit=crop&crop=center" alt="Маэстро">
+        <div>
+          <strong><i class="fas fa-lightbulb" style="color:#b87c4f;"></i> Нажмите для персональной рекомендации</strong>
+          <p style="margin-top:4px; font-size:0.95rem; color:#7a6250;">Подберём идеальный уровень занятий именно для вас</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>© 2026 TangoStudio — школа аутентичного танго. Москва, ул. Арбат 12.</p>
+  </div>
+</footer>
+
+<!-- МОДАЛКА -->
+<div id="contactModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Запись на урок</h3>
+    <form id="modalForm">
+      <input type="text" placeholder="Ваше имя" required>
+      <input type="tel" placeholder="Телефон" required>
+      <textarea rows="2" placeholder="Сообщение"></textarea>
+      <button type="submit">Отправить</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('loaderOverlay');
+    setTimeout(() => {
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 400);
+    }, 1000);
+  });
+
+  // Фантазийные элементы
+  const fantasy = document.getElementById('fantasyArea');
+  if(fantasy) {
+    const arr = ['♪','♫','💃','🕺','🎵'];
+    for(let i=0;i<18;i++) {
+      let el = document.createElement('div');
+      el.classList.add('floating');
+      el.textContent = arr[Math.floor(Math.random()*arr.length)];
+      el.style.left = Math.random()*100+'%';
+      el.style.top = Math.random()*100+'%';
+      el.style.fontSize = (Math.random()*28+16)+'px';
+      el.style.animationDuration = (12+Math.random()*12)+'s';
+      fantasy.appendChild(el);
+    }
+  }
+
+  // Слайдер
+  const track = document.getElementById('sliderTrack');
+  const slides = document.querySelectorAll('.slide');
+  const prev = document.getElementById('prevSlide');
+  const next = document.getElementById('nextSlide');
+  let current = 0;
+  const total = slides.length;
+  const dotsDiv = document.getElementById('dotsContainer');
+  function updateSlider() {
+    track.style.transform = `translateX(-${current*100}%)`;
+    document.querySelectorAll('.dot').forEach((d,i)=> d.classList.toggle('active', i===current));
+  }
+  function createDots() {
+    dotsDiv.innerHTML = '';
+    for(let i=0;i<total;i++) {
+      let dot = document.createElement('span');
+      dot.classList.add('dot');
+      if(i===current) dot.classList.add('active');
+      dot.addEventListener('click',()=>{ current=i; updateSlider(); });
+      dotsDiv.appendChild(dot);
+    }
+  }
+  prev?.addEventListener('click',()=>{ current = (current-1+total)%total; updateSlider(); });
+  next?.addEventListener('click',()=>{ current = (current+1)%total; updateSlider(); });
+  createDots();
+
+  // Табы
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+  tabs.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id = btn.getAttribute('data-tab');
+      contents.forEach(c=>c.classList.remove('active-content'));
+      tabs.forEach(b=>b.classList.remove('active'));
+      document.getElementById(id).classList.add('active-content');
+      btn.classList.add('active');
+    });
+  });
+
+  // Аккордеон
+  const accItems = document.querySelectorAll('.accordion-item');
+  accItems.forEach(item=>{
+    const header = item.querySelector('.accordion-header');
+    header.addEventListener('click',()=>{
+      item.classList.toggle('active');
+    });
+  });
+  if(accItems[0]) accItems[0].classList.add('active');
+
+  // Модалка
+  const modal = document.getElementById('contactModal');
+  const openBtns = [document.getElementById('openModalBtn'), document.getElementById('trialBtn'), document.getElementById('contactNavBtn')];
+  const closeModal = document.querySelector('.close-modal');
+  function openModal() { modal.classList.add('active'); }
+  function closeModalFunc() { modal.classList.remove('active'); }
+  openBtns.forEach(btn=> btn?.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); }));
+  closeModal?.addEventListener('click', closeModalFunc);
+  modal?.addEventListener('click', (e)=> { if(e.target===modal) closeModalFunc(); });
+  const formModal = document.getElementById('modalForm');
+  formModal?.addEventListener('submit', (e)=>{ e.preventDefault(); alert('Спасибо, скоро свяжемся!'); closeModalFunc(); formModal.reset(); });
+
+  // Умный совет
+  const smart = document.getElementById('smartAdvice');
+  smart?.addEventListener('click',()=> alert('💡 Совет: начните с пробного урока по четвергам. Ждём вас!'));
+
+  // Бургер-меню
+  const menuIcon = document.getElementById('menuIcon');
+  const navList = document.getElementById('navLinks');
+  menuIcon?.addEventListener('click',()=> navList.classList.toggle('show'));
+  document.querySelectorAll('.nav-links a').forEach(link=>{
+    link.addEventListener('click',(e)=>{
+      const href = link.getAttribute('href');
+      if(href && href.startsWith('#')){
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if(el) el.scrollIntoView({ behavior: 'smooth' });
+        navList.classList.remove('show');
+      }
+    });
+  });
+</script>
+</body>
+</html>
